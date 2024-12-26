@@ -169,3 +169,9 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+# ignore files
+
+Nifty500.csv
+CandleStick/
