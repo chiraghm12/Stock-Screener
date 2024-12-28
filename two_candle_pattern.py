@@ -4,6 +4,7 @@ Two Candle Stick Pattern Script for Stock Screener
 
 import utils
 
+# get the symbols of Nifty500
 SYMBOLS = utils.get_symbols()
 
 
@@ -19,6 +20,7 @@ def filter_two_candle_pattern():
     """
     Method for filter the data for two candle stick pattern
     """
+    # get the date for data fetch
     from_date, to_date = utils.get_date_for_two_candle()
 
     for symbol in SYMBOLS:
@@ -29,11 +31,14 @@ def filter_two_candle_pattern():
 
         feed = utils.fetch_data_from_nse(url)
 
+        # get the data of two days
         first_candle_data = feed.get("data")[0]
         second_candle_data = feed.get("data")[1]
 
+        # get the name of symbol
         name = first_candle_data.get("CH_SYMBOL")
 
+        # check for bullish engulfing
         if utils.is_bullish_engulfing(
             first_candle=first_candle_data, second_candle=second_candle_data
         ):
@@ -41,6 +46,7 @@ def filter_two_candle_pattern():
 
 
 if __name__ == "__main__":
+    # main method
     initialize_files()
     print("Filtering...")
     filter_two_candle_pattern()
