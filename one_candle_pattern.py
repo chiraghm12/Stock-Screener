@@ -4,6 +4,7 @@ One Candle Stick Pattern Script for Stock Screener
 
 import utils
 
+# get the symbols of Nifty500
 SYMBOLS = utils.get_symbols()
 
 
@@ -28,6 +29,7 @@ def filter_data():
     """
     Method for filter the data for single candle stick pattern
     """
+    # get the date for data fetch
     date = utils.get_date_for_one_candle()
 
     for symbol in SYMBOLS:
@@ -35,6 +37,7 @@ def filter_data():
         # "https://www.nseindia.com/api/historical/securityArchives?from=24-12-2024&to=25-12-2024&symbol=KFINTECH&dataType=priceVolumeDeliverable&series=EQ"
         url = f"https://www.nseindia.com/api/historical/securityArchives?from={date}&to={date}&symbol={utils.symbol_purify(symbol)}&dataType=priceVolumeDeliverable&series=ALL"
 
+        # fetch data from nse url
         feed = utils.fetch_data_from_nse(url)
 
         data = feed.get("data")[0]
@@ -44,6 +47,7 @@ def filter_data():
         close_price = data.get("CH_CLOSING_PRICE")
         name = data.get("CH_SYMBOL")
 
+        # check for hammer
         if utils.is_hammer(
             high_price=high_price,
             close_price=close_price,
@@ -53,6 +57,7 @@ def filter_data():
             # Append to CSV
             utils.write_to_csv_file(file_name="Hammer", mode="a", data=name)
 
+        # check for inverted hammer
         if utils.is_inverted_hammer(
             high_price=high_price,
             close_price=close_price,
@@ -62,6 +67,7 @@ def filter_data():
             # Append to CSV
             utils.write_to_csv_file(file_name="Inverted_Hammer", mode="a", data=name)
 
+        # check for doji
         if utils.is_doji(
             high_price=high_price,
             close_price=close_price,
@@ -71,6 +77,7 @@ def filter_data():
             # Append to CSV
             utils.write_to_csv_file(file_name="Doji", mode="a", data=name)
 
+        # check for spinning to bottom
         if utils.is_spinning_top_bottom(
             high_price=high_price,
             close_price=close_price,
@@ -84,6 +91,7 @@ def filter_data():
 
 
 if __name__ == "__main__":
+    # main method
     initialize_files()
     print("Filtering...")
     filter_data()
