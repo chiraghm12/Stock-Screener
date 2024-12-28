@@ -4,39 +4,58 @@ Script has Utility Methods
 
 import csv
 import os
+from datetime import datetime, timedelta
+
+import requests
+
+HEADERS = {
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "accept-language": "en-US,en;q=0.9,en-IN;q=0.8,en-GB;q=0.7",
+    "cache-control": "max-age=0",
+    "priority": "u=0, i",
+    "sec-ch-ua": '"Microsoft Edge";v="129", "Not=A?Brand";v="8", "Chromium";v="129"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Windows"',
+    "sec-fetch-dest": "document",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-site": "none",
+    "sec-fetch-user": "?1",
+    "upgrade-insecure-requests": "1",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
+}
+TIMEOUT_SECONDS = 300
 
 
-def initialize_files():
+def fetch_data_from_nse(link):
     """
-    Method for Initialize the csv files for store the Stocks name according to the pattern.
+    Method for fetch the data from nse.
     """
+    try:
+        output = requests.get(link, headers=HEADERS, timeout=TIMEOUT_SECONDS).json()
+        # print(output)
+    except ValueError:
+        s = requests.Session()
+        output = s.get("http://nseindia.com", headers=HEADERS)
+        output = s.get(link, headers=HEADERS).json()
+    return output
 
-    if not os.path.exists("CandleStick"):
-        os.mkdir("CandleStick")
 
-    # initialize file for Hammer
-    file_path = os.path.join("CandleStick", "Hammer.csv")
-    with open(file_path, mode="w", newline="", encoding="UTF-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Name"])
+def get_symbols():
+    """
+    Method for get the instruments key of Nifty500 Stocks.
+    """
+    csv_file_path = "Nifty500.csv"
+    column_name = "Symbol"
+    symbols = []
 
-    # initialize file for Doji
-    file_path = os.path.join("CandleStick", "Doji.csv")
-    with open(file_path, mode="w", newline="", encoding="UTF-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Name"])
+    # Open and read the CSV file
+    with open(csv_file_path, mode="r", encoding="UTF-8") as file:
+        reader = csv.DictReader(file)  # Use DictReader to access columns by name
+        for row in reader:
+            # Extract only the desired columns
+            symbols.append(row[column_name])
 
-    # initialize file for Inverted Hammer
-    file_path = os.path.join("CandleStick", "Inverted_Hammer.csv")
-    with open(file_path, mode="w", newline="", encoding="UTF-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Name"])
-
-    # initialize file for Spinning Top-Bottom
-    file_path = os.path.join("CandleStick", "Spinning_Top_Bottom.csv")
-    with open(file_path, mode="w", newline="", encoding="UTF-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Name"])
+    return symbols
 
 
 def is_inverted_hammer(open_price, high_price, low_price, close_price):
@@ -171,3 +190,103 @@ def symbol_purify(symbol):
     """
     symbol = symbol.replace("&", "%26")  # URL Parse for Stocks Like M&M Finance
     return symbol
+
+
+def get_last_friday():
+    """
+    Method for get the last friday date
+
+    Returns:
+        _type_: _description_
+    """
+    today = datetime.today()
+    # Calculate the number of days to subtract to get to last Friday
+    days_since_last_friday = (today.weekday() - 4) % 7
+    last_friday = today - timedelta(days=days_since_last_friday)
+    return last_friday.date()
+
+
+def is_bullish_engulfing(first_candle, second_candle):
+    """
+    Method for bullish engulfing candle stick pattern.
+    """
+
+    # first_high = first_candle.get("CH_TRADE_HIGH_PRICE")
+    # first_low = first_candle.get("CH_TRADE_LOW_PRICE")
+    first_open = first_candle.get("CH_OPENING_PRICE")
+    first_close = first_candle.get("CH_CLOSING_PRICE")
+
+    # second_high = second_candle.get("CH_TRADE_HIGH_PRICE")
+    # second_low = second_candle.get("CH_TRADE_LOW_PRICE")
+    second_open = second_candle.get("CH_OPENING_PRICE")
+    second_close = second_candle.get("CH_CLOSING_PRICE")
+
+    # Check if the first candle is bearish
+    is_first_bearish = first_close < first_open
+
+    # Check if the second candle is bullish
+    is_second_bullish = second_close > second_open
+
+    # Check if the second candle engulfs the first candle
+    is_engulfing = (second_open < first_close) and (second_close > first_open)
+
+    # Return True if all conditions are met
+    return is_first_bearish and is_second_bullish and is_engulfing
+
+
+def write_to_csv_file(file_name, data, mode):
+    """
+    Method for write into CSV File
+    """
+    if not os.path.exists("CandleStick"):
+        os.mkdir("CandleStick")
+
+    date_folder_path = os.path.join("CandleStick", datetime.now().strftime("%d-%m-%Y"))
+    if not os.path.exists(date_folder_path):
+        os.mkdir(date_folder_path)
+
+    file_path = os.path.join(date_folder_path, f"{file_name}.csv")
+    with open(file_path, mode=mode, newline="", encoding="UTF-8") as file:
+        writer = csv.writer(file)
+        writer.writerow([data])
+
+
+def get_date_for_one_candle():
+    """
+    Method for generate date for one candle pattern
+
+    Returns:
+        str: date for one candle pattern
+    """
+    date = ""
+    if datetime.now().strftime("%A") in ["Sunday", "Saturday"]:
+        date = get_last_friday().strftime("%d-%m-%Y")
+    else:
+        date = datetime.now().strftime("%d-%m-%Y")
+
+    return date
+
+
+def get_date_for_two_candle():
+    """
+    Method for generate date for two candle pattern
+
+    Returns:
+        list: starting and ending date
+    """
+    from_date = ""
+    to_date = ""
+    if datetime.now().strftime("%A") == "Monday":
+        from_date = datetime.now() - timedelta(days=3)
+        to_date = datetime.now()
+    elif datetime.now().strftime("%A") in ["Sunday", "Saturday"]:
+        to_date = get_last_friday()
+        from_date = to_date - timedelta(days=1)
+    else:
+        from_date = datetime.now() - timedelta(days=1)
+        to_date = datetime.now().strftime("%d-%m-%Y")
+
+    from_date = from_date.strftime("%d-%m-%Y")
+    to_date = to_date.strftime("%d-%m-%Y")
+
+    return [from_date, to_date]
