@@ -371,3 +371,29 @@ def is_bearish_kicker(first_candle, second_candle):
     no_overlap = first_low >= second_high
 
     return is_first_bullish and is_second_bearish and no_overlap
+
+
+def is_pro_gap_positive(first_candle, second_candle):
+    """
+    Method for bearish kicker candle stick pattern.
+    """
+    # first_high = first_candle.get("CH_TRADE_HIGH_PRICE")
+    # first_low = first_candle.get("CH_TRADE_LOW_PRICE")
+    first_open = first_candle.get("CH_OPENING_PRICE")
+    first_close = first_candle.get("CH_CLOSING_PRICE")
+
+    # second_high = second_candle.get("CH_TRADE_HIGH_PRICE")
+    # second_low = second_candle.get("CH_TRADE_LOW_PRICE")
+    second_open = second_candle.get("CH_OPENING_PRICE")
+    second_close = second_candle.get("CH_CLOSING_PRICE")
+
+    # check if the first candle is bearish
+    is_first_bearish = first_close < first_open
+
+    # check if the second candle is bullish
+    is_second_bullish = second_close > second_open
+
+    # condition for pro gap
+    gap_positive = second_open > first_close
+
+    return is_first_bearish and is_second_bullish and gap_positive
