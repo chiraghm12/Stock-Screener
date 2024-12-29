@@ -22,6 +22,7 @@ HEADERS = {
     "sec-fetch-user": "?1",
     "upgrade-insecure-requests": "1",
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
+    "Connection": "keep-alive",
 }
 TIMEOUT_SECONDS = 300
 
@@ -290,3 +291,83 @@ def get_date_for_two_candle():
     to_date = to_date.strftime("%d-%m-%Y")
 
     return [from_date, to_date]
+
+
+def is_bearish_engulfing(first_candle, second_candle):
+    """
+    Method for bearish engulfing candle stick pattern.
+    """
+
+    # first_high = first_candle.get("CH_TRADE_HIGH_PRICE")
+    # first_low = first_candle.get("CH_TRADE_LOW_PRICE")
+    first_open = first_candle.get("CH_OPENING_PRICE")
+    first_close = first_candle.get("CH_CLOSING_PRICE")
+
+    # second_high = second_candle.get("CH_TRADE_HIGH_PRICE")
+    # second_low = second_candle.get("CH_TRADE_LOW_PRICE")
+    second_open = second_candle.get("CH_OPENING_PRICE")
+    second_close = second_candle.get("CH_CLOSING_PRICE")
+
+    # Check if the first candle is bullish
+    is_first_bullish = first_close > first_open
+
+    # Check if the second candle is bearish
+    is_second_bearish = second_close < second_open
+
+    # Check if the second candle engulfs the first candle
+    is_engulfing = (second_open > first_close) and (second_close < first_open)
+
+    # Return True if all conditions are met
+    return is_first_bullish and is_second_bearish and is_engulfing
+
+
+def is_bullish_kicker(first_candle, second_candle):
+    """
+    Method for bullish kicker candle stick pattern.
+    """
+    first_high = first_candle.get("CH_TRADE_HIGH_PRICE")
+    # first_low = first_candle.get("CH_TRADE_LOW_PRICE")
+    first_open = first_candle.get("CH_OPENING_PRICE")
+    first_close = first_candle.get("CH_CLOSING_PRICE")
+
+    # second_high = second_candle.get("CH_TRADE_HIGH_PRICE")
+    second_low = second_candle.get("CH_TRADE_LOW_PRICE")
+    second_open = second_candle.get("CH_OPENING_PRICE")
+    second_close = second_candle.get("CH_CLOSING_PRICE")
+
+    # check if the first candle is bearish
+    is_first_bearish = first_close < first_open
+
+    # check if the second candle is bullish
+    is_second_bullish = second_close > second_open
+
+    # No overlap in prices
+    no_overlap = first_high <= second_low
+
+    return is_first_bearish and is_second_bullish and no_overlap
+
+
+def is_bearish_kicker(first_candle, second_candle):
+    """
+    Method for bearish kicker candle stick pattern.
+    """
+    # first_high = first_candle.get("CH_TRADE_HIGH_PRICE")
+    first_low = first_candle.get("CH_TRADE_LOW_PRICE")
+    first_open = first_candle.get("CH_OPENING_PRICE")
+    first_close = first_candle.get("CH_CLOSING_PRICE")
+
+    second_high = second_candle.get("CH_TRADE_HIGH_PRICE")
+    # second_low = second_candle.get("CH_TRADE_LOW_PRICE")
+    second_open = second_candle.get("CH_OPENING_PRICE")
+    second_close = second_candle.get("CH_CLOSING_PRICE")
+
+    # check if the first candle is bullish
+    is_first_bullish = first_close > first_open
+
+    # check if the second candle is bearish
+    is_second_bearish = second_close < second_open
+
+    # No overlap in prices
+    no_overlap = first_low >= second_high
+
+    return is_first_bullish and is_second_bearish and no_overlap
