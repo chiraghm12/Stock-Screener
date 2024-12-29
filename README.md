@@ -8,6 +8,7 @@ Screener filter following CandleStick Patterns:
 * **Spinning Top / Bottom**
 * **Engulfing (Bullish/Bearish)**
 * **Kicker (Bullish/Bearish)**
+* **Pro Gap Positive**
 
 ## Installation
 
@@ -70,6 +71,7 @@ Two Files:
  - A CSV file contains stock name with Spinning Top and Bottom
  - A CSV file contains stock name with Engulfing(Bullish/Bearish)
  - A CSV file contains stock name with Kicker(Bullish/Bearish)
+ - A CSV file contains stock name with Pro Gap Positive
 
 ## Acknowledgements
 

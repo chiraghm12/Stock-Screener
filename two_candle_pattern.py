@@ -24,6 +24,9 @@ def initialize_files():
     # initialize the bearish kicker pattern file
     utils.write_to_csv_file(file_name="Bearish_Kicker", mode="w", data="NAME")
 
+    # initialize the pro gap positive pattern file
+    utils.write_to_csv_file(file_name="Pro_Gap_Positive", mode="w", data="NAME")
+
 
 def filter_two_candle_pattern():
     """
@@ -70,6 +73,12 @@ def filter_two_candle_pattern():
             first_candle=first_candle_data, second_candle=second_candle_data
         ):
             utils.write_to_csv_file(file_name="Bearish_Kicker", mode="a", data=name)
+
+        # check for pro gap positive
+        if utils.is_pro_gap_positive(
+            first_candle=first_candle_data, second_candle=second_candle_data
+        ):
+            utils.write_to_csv_file(file_name="Pro_Gap_Positive", mode="a", data=name)
 
 
 if __name__ == "__main__":
