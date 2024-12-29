@@ -49,10 +49,12 @@ Screener filter following CandleStick Patterns:
 
 5. Run the file
     * For One Candle-Stick Pattern
+
         ```
         python -m one_candle_pattern.py
         ```
     * For Two Candle-Stick Pattern
+
         ```
         python -m two_candle_pattern.py
         ```
