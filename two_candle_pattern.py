@@ -15,6 +15,15 @@ def initialize_files():
     # initialize the bullish engulfing pattern file
     utils.write_to_csv_file(file_name="Bullish_Engulfing", mode="w", data="NAME")
 
+    # initialize the bearish engulfing pattern file
+    utils.write_to_csv_file(file_name="Bearish_Engulfing", mode="w", data="NAME")
+
+    # initialize the bullish kicker pattern file
+    utils.write_to_csv_file(file_name="Bullish_Kicker", mode="w", data="NAME")
+
+    # initialize the bearish kicker pattern file
+    utils.write_to_csv_file(file_name="Bearish_Kicker", mode="w", data="NAME")
+
 
 def filter_two_candle_pattern():
     """
@@ -43,6 +52,24 @@ def filter_two_candle_pattern():
             first_candle=first_candle_data, second_candle=second_candle_data
         ):
             utils.write_to_csv_file(file_name="Bullish_Engulfing", mode="a", data=name)
+
+        # check for bearish engulfing
+        if utils.is_bearish_engulfing(
+            first_candle=first_candle_data, second_candle=second_candle_data
+        ):
+            utils.write_to_csv_file(file_name="Bearish_Engulfing", mode="a", data=name)
+
+        # check for bullish kicker
+        if utils.is_bullish_kicker(
+            first_candle=first_candle_data, second_candle=second_candle_data
+        ):
+            utils.write_to_csv_file(file_name="Bullish_Kicker", mode="a", data=name)
+
+        # check for bearish kicker
+        if utils.is_bearish_kicker(
+            first_candle=first_candle_data, second_candle=second_candle_data
+        ):
+            utils.write_to_csv_file(file_name="Bearish_Kicker", mode="a", data=name)
 
 
 if __name__ == "__main__":
