@@ -229,7 +229,7 @@ def is_bullish_engulfing(first_candle, second_candle):
     is_second_bullish = second_close > second_open
 
     # Check if the second candle engulfs the first candle
-    is_engulfing = (second_open < first_close) and (second_close > first_open)
+    is_engulfing = (second_open <= first_close) and (second_close >= first_open)
 
     # Return True if all conditions are met
     return is_first_bearish and is_second_bullish and is_engulfing
@@ -315,7 +315,7 @@ def is_bearish_engulfing(first_candle, second_candle):
     is_second_bearish = second_close < second_open
 
     # Check if the second candle engulfs the first candle
-    is_engulfing = (second_open > first_close) and (second_close < first_open)
+    is_engulfing = (second_open >= first_close) and (second_close <= first_open)
 
     # Return True if all conditions are met
     return is_first_bullish and is_second_bearish and is_engulfing
