@@ -285,7 +285,7 @@ def get_date_for_two_candle():
         from_date = to_date - timedelta(days=1)
     else:
         from_date = datetime.now() - timedelta(days=1)
-        to_date = datetime.now().strftime("%d-%m-%Y")
+        to_date = datetime.now()
 
     from_date = from_date.strftime("%d-%m-%Y")
     to_date = to_date.strftime("%d-%m-%Y")
